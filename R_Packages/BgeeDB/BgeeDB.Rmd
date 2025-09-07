@@ -8,11 +8,13 @@ editor_options:
 ---
 
 # What is BgeeDB?
-BgeeDB is an R package to access the Bgee database of gene expression evolution. It allows to:  
-** Retrieve processed expression values (RNA-Seq, Affymetrix, in situ hybridization, EST) for a given species and set of conditions
-** Download cell level expression data (h5ad files)
-** Download propagated calls of presence/absence of expression
-** Perform TopAnat analyses (anatomical expression enrichment tests)
+BgeeDB is an R package to access the Bgee database of gene expression evolution.
+It allows to:  
+
+- Retrieve processed expression values (RNA-Seq, single-cell RNA-Seq, Affymetrix) for a given species and set of conditions
+- Download cell level expression data (h5ad files)
+- Download propagated calls of presence/absence of expression
+- Perform TopAnat analyses (anatomical entity enrichment analysis)
 
 # Getting started with BgeeDB
 
@@ -43,7 +45,7 @@ bgee_object <- Bgee$new(species = "Drosophila_melanogaster", release = "15.2", d
 
 ```
 
-# Retrieve processed expression values
+# Download processed expression values
 
 ## Parse available experiments and samples
 ```{r}
@@ -107,9 +109,9 @@ class(brain_testis_expressionSet)
 ```
 
 ## delete local data
-```{r}
+```{r, eval=FALSE}
 # delete local data once you finish your analysis to free disk space
-#deleteLocalData(myBgeeObject = bgee_object, allDataTypes = TRUE)
+deleteLocalData(myBgeeObject = bgee_object, allDataTypes = TRUE)
 ```
 
 
@@ -220,7 +222,7 @@ tableOver <- makeTable(topAnat_data, topAnat_object, results, cutoff = 0.01)
 head(tableOver)
 ```
 
-## Run the same analysis from sexually matured samles only
+## Run the same analysis from sexually matured samples only
 ```{r}
 # Load TopAnat data for sexually matured samples. UBERON:0000066 = "fully formed stage"
 topAnat_data_matured <- loadTopAnatData(myBgeeObject = topanat_bgee_object, stage = c("UBERON:0000066"))
