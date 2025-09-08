@@ -1,0 +1,236 @@
+---
+title: "BgeeDB R Notebook - BC2 tutorial 2025"
+output: rmarkdown::html_notebook
+editor_options:
+  chunk_output_type: console
+  inline: true
+  eval: true
+---
+
+# What is BgeeDB?
+BgeeDB is an R package to access the Bgee database of gene expression evolution.
+It allows to:  
+
+- Retrieve processed expression values (RNA-Seq, single-cell RNA-Seq, Affymetrix) for a given species and set of conditions
+- Download cell level expression data (h5ad files)
+- Download propagated calls of presence/absence of expression
+- Perform TopAnat analyses (anatomical entity enrichment analysis)
+
+# Getting started with BgeeDB
+
+## Install and load BgeeDB
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+# install the BgeeDB package from last Bioconductor release
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+if (!requireNamespace("BgeeDB", quietly = TRUE))
+    BiocManager::install("BgeeDB")
+if (!requireNamespace("dplyr", quietly = TRUE))
+    BiocManager::install("dplyr")
+library(BgeeDB)
+library(dplyr)
+```
+
+## List available species and releases
+```{r, message=FALSE}
+# list available releases
+listBgeeRelease()
+# list available species
+listBgeeSpecies(release = "15.2")
+```
+
+## Create a BgeeDB connector object
+```{r, message=FALSE}
+bgee_object <- Bgee$new(species = "Drosophila_melanogaster", release = "15.2", dataType = "rna_seq")
+
+```
+
+# Download processed expression values
+
+## Parse available experiments and samples
+```{r}
+annotation <- getAnnotation(myBgeeObject = bgee_object)
+# experiment metadata
+annotation$experiment.annotation
+# sample metadata
+head(annotation$sample.annotation)
+# group sample annotation by experiment and anatomical entity
+annotation$sample.annotation %>%
+  group_by(Experiment.ID, Anatomical.entity.ID, Anatomical.entity.name) %>%
+  summarise(n = n(), .groups = "drop")
+
+```
+
+## Retrieve expression data
+```{r, eval=FALSE}
+# example of potential filters
+expression_data_filtering_example <- getSampleProcessedData(myBgeeObject = bgee_object,
+                                                      # from the experiment ERP024551
+                                                      experimentId = c("ERP024551"),
+                                                      # from a collection of libraries
+                                                      libraryId = c("ERX2162339", "ERX2162340", "ERX2159569"),
+                                                      # from different anatomical entities and their descendants
+                                                      anatEntityId = c("UBERON:0000473", "UBERON:0000992"),
+                                                      withDescendantAnatEntities = TRUE,
+                                                      # from 2 different celltypes
+                                                      cellTypeId = c("CL:0000017", "CL:0000236"),
+                                                      withDescendantCellTypes = FALSE,
+                                                      # from female samples only
+                                                      sex = "female",
+                                                      # from the Canton-S strain only
+                                                      strain = "Canton-S",
+                                                      # from one specific developmental stage and its descendants
+                                                      stageId = "UBERON:0000066",
+                                                      withDescendantStages = TRUE)
+```
+```{r}
+# retrieve ovary and testis expression data from adult samples of the experiment ERP024551
+brain_testis_expression_data <- getSampleProcessedData(myBgeeObject = bgee_object,
+                                                      # from testis and ovary
+                                                      anatEntityId = c("UBERON:0000473", "UBERON:0000992"),
+                                                      # from the experiment ERP024551
+                                                      experimentId = c("ERP024551"),
+                                                      # from "fully formed stage" and all its descendants
+                                                      stageId = c("UBERON:0000066"),
+                                                      withDescendantStages = TRUE)
+message("Number of processed expression values: ", nrow(brain_testis_expression_data))
+message("Number of libraries: ", length(unique(brain_testis_expression_data$Library.ID)))
+head(brain_testis_expression_data)
+
+```
+
+## Transform processed expression values for downstream analysis
+```{r}
+brain_testis_expressionSet <- formatData(myBgeeObject = bgee_object,
+                                                data = brain_testis_expression_data,
+                                                # counts / cpm / tpm / intensities
+                                                stats = "counts")
+class(brain_testis_expressionSet)
+```
+
+## delete local data
+```{r, eval=FALSE}
+# delete local data once you finish your analysis to free disk space
+deleteLocalData(myBgeeObject = bgee_object, allDataTypes = TRUE)
+```
+
+
+# Download cell level expression data (h5ad)
+
+## Download dependencies
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+if (!requireNamespace("SingleCellExperiment", quietly = TRUE))
+    install.packages("SingleCellExperiment")
+library(SingleCellExperiment)
+```
+
+ ## Create a BgeeDB connector object and parse annotation
+```{r}
+# Create a BgeeDB connector object for human droplet-based single-cell RNA-Seq data
+cell_level_bgee_object <- Bgee$new(species = "Homo_sapiens", dataType = "sc_droplet_based")
+# check annotation
+human_droplet_based_annotation <- getAnnotation(myBgeeObject = cell_level_bgee_object)
+head(human_droplet_based_annotation$sample.annotation)
+# list experiments with B-cell 
+human_droplet_based_annotation$sample.annotation %>%
+  filter(Celltype.ID == "CL:0000236") %>%
+  group_by(Experiment.ID, Anatomical.entity.ID, Anatomical.entity.name) %>%
+  summarise(n = n(), .groups = "drop")
+```
+
+## Download cell level expression data and filter expression matrix
+```{r}
+# Download the data
+h5ad_ERP117745 <- getCellProcessedData(myBgeeObject = cell_level_bgee_object, experimentId = "ERP117745")
+# subset on B cells
+b_cells_ERP117745 <- subset(
+  h5ad_ERP117745,
+  select = colData(h5ad_ERP117745)$cellTypeId == "CL:0000236")
+message("Number of B cells: ", ncol(b_cells_ERP117745), ", number of genes: ", nrow(b_cells_ERP117745))
+# Extract a small slice of the expression matrix for visualization
+data.frame(as.matrix(assay(b_cells_ERP117745)[1:20, 1:20]))
+```
+
+# Download propagated calls of presence/absence of expression
+
+```{r}
+# Create a BgeeDB connector object for cattle
+bgee_cattle <- Bgee$new(species = "Bos_taurus")
+# MYH1 : affects muscle growth and fiber type
+# CSN2 : key component of milk protein content
+expression_calls <- getIntegratedCalls(myBgeeObject = bgee_cattle, geneIds=c("ENSBTAG00000018204", "ENSBTAG00000002632"),
+                                        # which condition paremeters to use to define conditions
+                                        conditionParameters = "anatEntity",
+                                        # include advanced columns (e.g. number of self and descendant observation, rank per datatype)
+                                        advancedColumns = FALSE)
+
+# calls for MYH1 ordered by decreasing expression score
+myh1_calls <- expression_calls %>%
+  filter(`Gene ID` == "ENSBTAG00000018204") %>%
+  arrange(desc(`Expression score`)) 
+head(myh1_calls)
+
+# calls for CSN2 ordered by decreasing expression score
+csn2_calls <- expression_calls %>%
+  filter(`Gene ID` == "ENSBTAG00000002632") %>%
+  arrange(desc(`Expression score`)) 
+head(csn2_calls)
+```
+
+
+
+# TopAnat
+
+## Retrieve TopAnat data from Bgee
+```{r}
+# Create a BgeeDB connector object for zebrafish
+topanat_bgee_object <- Bgee$new(species = "Mus_musculus")
+topAnat_data <- loadTopAnatData(myBgeeObject = topanat_bgee_object, stage = c("UBERON:0000104"))
+```
+
+## Provide gene lists
+```{r}
+# foreground gene list : mouse genes annotated to GO term "spermatogenesis"
+foreground_genes <- readLines("data/foreground.txt")
+message("Number of genes in foreground gene list: ", length(foreground_genes))
+# background gene list : mouse genes annotated to GO term "spermatogenesis" - Background: all mouse genes with a GO annotation
+background_genes <- readLines("data/background.txt")
+message("Number of genes in background gene list: ", length(background_genes))
+# create a named factor vector for the gene list
+geneList <- factor(ifelse(background_genes %in% foreground_genes, 1, 0))
+names(geneList) <- background_genes
+```
+
+## List genes with no expression data in Bgee
+```{r}
+no_expression_genes <- background_genes[! background_genes %in% names(topAnat_data$gene2anatomy)]
+# list genes with no expression from the foreground gene list
+no_expression_foreground <- foreground_genes[foreground_genes %in% no_expression_genes]
+message("Number of genes with no expression data in Bgee: ", length(no_expression_genes))
+no_expression_background <- no_expression_genes[!no_expression_genes %in% no_expression_foreground]
+message("Number of genes with no expression data in Bgee from the background gene list: ", length(no_expression_background))
+```
+
+## Run TopAnat analysis and visualize results
+```{r}
+# create a topAnat object
+topAnat_object <-  topAnat(topAnat_data, geneList)
+# perform the enrichment analysis
+results <- runTest(topAnat_object, algorithm = 'weight', statistic = 'fisher')
+# show significant results
+tableOver <- makeTable(topAnat_data, topAnat_object, results, cutoff = 0.01)
+head(tableOver)
+```
+
+## Run the same analysis from sexually matured samples only
+```{r}
+# Load TopAnat data for sexually matured samples. UBERON:0000066 = "fully formed stage"
+topAnat_data_matured <- loadTopAnatData(myBgeeObject = topanat_bgee_object, stage = c("UBERON:0000066"))
+# create a topAnat object
+topAnat_object_matured <-  topAnat(topAnat_data_matured, geneList)
+# perform the enrichment analysis
+results_matured <- runTest(topAnat_object_matured, algorithm = 'weight', statistic = 'fisher')
+# show significant results
+tableOver_matured <- makeTable(topAnat_data_matured, topAnat_object_matured, results_matured, cutoff = 0.01)
+head(tableOver_matured)
+```
