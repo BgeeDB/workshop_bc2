@@ -1,0 +1,4 @@
+species_id	run_ids	output_directory	weights
+Human	ERX011222	./output/ERX011222	71754649
+Human	SRX199044	./output/SRX199044	19162148
+Human	SRX564448	./output/SRX564448	34306610

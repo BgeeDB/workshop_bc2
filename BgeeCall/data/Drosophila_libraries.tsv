@@ -1,7 +1,7 @@
 species_id	run_ids	reads_size	 rnaseq_lib_path	transcriptome_path	annotation_path	output_directory
-7227	SRR384929	100	./data/SRX109278	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX109278/
-7227	SRR384930	100	./data/SRX109279	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX109279/
-7227	SRR1197301	100	./data/SRX493950	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX493950/
-7227	SRR1197297	100	./data/SRX493999	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX493999/
-7227	SRR3419767	75	./data/SRX1720957	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX1720957/
-7227	SRR3419768	75	./data/SRX1720958	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX1720958/
+7227	SRR384929	100	./data/SRX109279	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX109278/
+7227	SRR384930	100	./data/SRX109278	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX109279/
+7227	SRR1197301	100	./data/ERX2162341	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX493950/
+7227	SRR1197297	100	./data/ERX2162340	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX493999/
+7227	SRR3419767	75	./data/SRX1720958	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX1720957/
+7227	SRR3419768	75	./data/SRX1720957	./data/Drosophila_melanogaster_Transcriptome.cdna.all.fa	./data/Drosophila_melanogaster_Annotation.chr.gtf	./output/SRX1720958/

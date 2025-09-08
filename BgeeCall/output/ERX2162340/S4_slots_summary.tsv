@@ -1,0 +1,14 @@
+Slot name	Slot value
+AbundanceMetadata@tool_name	kallisto
+AbundanceMetadata@txOut	FALSE
+AbundanceMetadata@ignoreTxVersion	FALSE
+AbundanceMetadata@cutoff	0.05
+AbundanceMetadata@read_size_kmer_threshold	60
+BgeeMetadata@intergenic_release	custom
+UserMetadata@species_id	7227
+UserMetadata@reads_size	100
+UserMetadata@rnaseq_lib_path	./data/ERX2162340/
+UserMetadata@transcriptome_name	Drosophila_melanogaster_Transcriptome.cdna.all.fa
+UserMetadata@annotation_name	Drosophila_melanogaster_Annotation.chr.gtf
+UserMetadata@simple_arborescence	TRUE
+output_dir	./output/ERX2162340/
