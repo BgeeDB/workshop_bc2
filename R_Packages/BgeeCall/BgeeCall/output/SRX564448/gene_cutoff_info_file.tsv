@@ -1,0 +1,14 @@
+libraryId	SRX564448
+cutoffTPM	0.433236
+proportionGenicPresent	33.0525008868393
+numberGenicPresent	26089
+numberGenic	78932
+proportionCodingPresent	76.4118114933386
+numberPresentCoding	15371
+numberCoding	20116
+proportionIntergenicPresent	0
+numberIntergenicPresent	0
+numberIntergenic	47386
+pValueCutoff	0.05
+meanIntergenic	0.138982046622326
+sdIntergenic	2.41789332268624

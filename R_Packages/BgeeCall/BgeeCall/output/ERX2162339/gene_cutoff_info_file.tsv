@@ -1,0 +1,14 @@
+libraryId	ERX2162339
+cutoffTPM	0.827117
+proportionGenicPresent	54.2672378284867
+numberGenicPresent	13175
+numberGenic	24278
+proportionCodingPresent	75.1966251966252
+numberPresentCoding	10517
+numberCoding	13986
+proportionIntergenicPresent	0
+numberIntergenicPresent	0
+numberIntergenic	5273
+pValueCutoff	0.05
+meanIntergenic	0.335664427549825
+sdIntergenic	2.74930957541902

@@ -1,0 +1,14 @@
+{
+	"n_targets": 435330,
+	"n_bootstraps": 0,
+	"n_processed": 28065576,
+	"n_pseudoaligned": 19162148,
+	"n_unique": 4925011,
+	"p_pseudoaligned": 68.3,
+	"p_unique": 17.5,
+	"kallisto_version": "0.51.0",
+	"index_version": 13,
+	"k-mer length": 31,
+	"start_time": "Wed May  7 10:51:18 2025",
+	"call": "kallisto quant -i /data/FAC/FBM/DEE/mrobinso/bgee_sensitive//bgee_v16_0/rna_seq/calls//intergenic_custom/9606/kallisto/transcriptome_Homo_sapiens_GRCh38_transcriptome_wo_intergenic_fa/transcriptome.idx -o /data/FAC/FBM/DEE/mrobinso/bgee_sensitive//bgee_v16_0/rna_seq/calls//all_results/SRX199044 -t 1 /dev/fd/63 /dev/fd/62"
+}
